@@ -1,5 +1,7 @@
 import xmpp
 import slixmpp
+from slixmpp.exceptions import IqError, IqTimeout
+from slixmpp.xmlstream.stanzabase import ET
 
 def sign_in(client, password):
 	"""
@@ -18,4 +20,40 @@ def sign_in(client, password):
 	        'username': jid.getNode(),
 	        'password': password
 	    }))
-		
+
+class Delete_account(slixmpp.ClientXMPP):
+	"""
+	A delete account class to remove the account from the server.
+	Attributes:
+		jid: string with the JID of the client.
+		password: string
+	"""
+	def __init__(self, jid, password):
+		slixmpp.ClientXMPP.__init__(self, jid, password)
+		self.user = jid
+		# event handler for the session_start event
+		self.add_event_handler("session_start", self.start)
+
+	async def start(self, event):
+		self.send_presence()
+		await self.get_roster()
+		# unregister & disconnect
+		await self.unregister()
+		self.disconnect()
+
+	async def unregister(self):
+		response = self.Iq()
+		response['type'] = 'set'
+		response['from'] = self.boundjid.user
+		fragment = ET.fromstring("<query xmlns='jabber:iq:register'><remove/></query>")
+		response.append(fragment)
+
+		try:
+			await response.send()
+			print(f"Account deleted successfully: {self.boundjid.jid}!")
+		except IqError as e:
+			print(f"Error on deleted account: {e.iq['error']['text']}")
+			self.disconnect()
+		except IqTimeout:
+			print("No response from server.")
+			self.disconnect()

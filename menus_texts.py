@@ -2,7 +2,8 @@ main_menu = '''\n
 ==================== MAIN MENU  ====================\n
 \t1. Sign In\n
 \t2. Log In\n
-\t3. Exit\n
+\t3. Delete account. Danger!\n
+\t4. Exit\n
 '''
 
 login_menu = '''\n
