@@ -1,16 +1,21 @@
 import logging
+from pydoc import cli
 import aiodns
 import asyncio
+from asyncio import run
 from account import *
 from utils import *
+from client import Client
 from optparse import OptionParser
 from menus_texts import *
 
-async def chat():
+async def chat(client: Client):
 	connected = True
 	print('User coneected successfully')
 	while connected:
 		option = get_login_menu_option()
+		if option == 7:
+			connected
 
   
 
@@ -42,10 +47,17 @@ if __name__ == "__main__":
 		# OPTION 2: Login
 		if option == 2:
 			jid, password = get_jid_and_password()
-			# client = Client(jid, password)
+			status, status_message = get_status()
+			client = Client(jid, password, status, status_message)
 			# client.connect(force_starttls=False)
 			# client.process(forever=False)
-			# chat()
+			client.connect(disable_starttls=False)
+			# run(chat(client))
+			client.process(forever=False)
+			# client.connect(disable_starttls=False)
+			# client.loop.run_until_complete(client.connected_event.wait())
+			# client.loop.create_task(chat(client))
+			# client.process(forever=False)
 		# OPTION 3: Remove account
 		if option == 3:
 			jid, password = get_jid_and_password()

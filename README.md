@@ -21,10 +21,10 @@ TODO
 This client provides basic chat features throughout the CLI interface.
 
 - [x] Sign Up with a new account.
-- [] Log in with an existent account.
-- [] Log out from an existing account.
+- [X] Log in with an existent account.
+- [X] Log out from an existing account.
 - [x] Delete an account from the server.
-- [] Display contants ifno and state.
+- [] Display contants info and state.
 - [] Add a new contact.
 - [] Message 1 to 1.
 - [] Chat rooms.
