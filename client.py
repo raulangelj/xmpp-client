@@ -1,7 +1,7 @@
 import logging
 import slixmpp
 import asyncio
-from utils import get_login_menu_option, chat
+from utils import get_login_menu_option, get_status
 from slixmpp.exceptions import IqError, IqTimeout
 
 class Client(slixmpp.ClientXMPP):
@@ -31,8 +31,7 @@ class Client(slixmpp.ClientXMPP):
 		Start the client and connect to the server.
 		"""
 		try:
-			self.send_presence(pshow=self.status, pstatus=self.status_message
-			) # send presence to the server
+			self.send_presence(pshow=self.status, pstatus=self.status_message) # send presence to the server
 			await self.get_roster() # get the roster
 			print('Welcome to the chat')
 			# TODO - add the menu logic for user interaction here
@@ -52,11 +51,22 @@ class Client(slixmpp.ClientXMPP):
 				elif option == 5:
 					print('send group message')
 				elif option == 6:
-					print('change status')
+					"""
+					Change status
+					"""
+					status, status_message = get_status()
+					self.status = status
+					self.status_message = status_message
+					self.send_presence(pshow=self.status, pstatus=self.status_message) # send presence to the server
+					await self.get_roster() # get the roster
 				elif option == 7:
-					print('logout')
+					"""
+					Logout
+					"""
+					self.send_presence(pshow='Away', pstatus='Logged out') # send presence to the server
 					self.disconnect()
 					connected = False
+					print('Logged out')
 		except IqError as err:
 			print(f"Error: {err.iq['error']['text']}")
 			self.disconnect()
