@@ -1,6 +1,10 @@
 import logging
+from time import time
 import slixmpp
 import asyncio
+import xmpp
+import time
+from config import WAIT
 from utils import get_login_menu_option, get_status
 from slixmpp.exceptions import IqError, IqTimeout
 
@@ -43,7 +47,18 @@ class Client(slixmpp.ClientXMPP):
 				if option == 1:
 					print('Show contacts')
 				elif option == 2:
-					print('Add contact')
+					"""
+					Add contact
+					"""
+					print('==================== Add contact ====================')
+					print('Write the JID of the contact: ')
+					jid = input('> ')
+					if (jid is not None) and (jid != ''):
+						self.send_presence_subscription(pto = jid)
+						print('Contact request sent')
+					else:
+						print('Invalid JID')
+					time.sleep(WAIT)
 				elif option == 3:
 					print('show contacts info')
 				elif option == 4:
