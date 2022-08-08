@@ -24,7 +24,7 @@ This client provides basic chat features throughout the CLI interface.
 - [X] Log in with an existent account.
 - [X] Log out from an existing account.
 - [x] Delete an account from the server.
-- [] Display contants info and state.
+- [X] Display contants info and state.
 - [X] Add a new contact.
 - [] Message 1 to 1.
 - [] Chat rooms.

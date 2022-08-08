@@ -60,7 +60,45 @@ class Client(slixmpp.ClientXMPP):
 						print('Invalid JID')
 					time.sleep(WAIT)
 				elif option == 3:
+					"""
+					Show contact's info
+					"""
 					print('show contacts info')
+					roster = self.client_roster.groups()
+					my_contacts = []
+					for group in roster:
+						for contact in roster[group]:
+							show = 'Avialable'
+							status = ''
+							conection = self.client_roster.presence(contact)
+							contactUserName = contact.split('@')[0]
+							if conection.items():
+								for answare, presence in conection.items():
+									if presence['show']:
+										show = presence['show']
+									if presence['status']:
+										status = presence['status']
+							else:
+								show = 'Offline'
+							my_contacts.append({
+								'name': contactUserName,
+								'state': show,
+								'status': status,
+								'user': contact
+							})
+					if my_contacts:
+						print('Contacts:\n')
+						for contact in my_contacts:
+							if contact['name'] != self.name:
+								print(f'JID >> {contact["user"]}')
+								print(f'User name >> {contact["name"]}')
+								print(f'State >> {contact["state"]}')
+								if contact['state'] != 'Offline':
+									print(f'Status >> {contact["status"]}')
+								print('===================\n')
+						time.sleep(WAIT)
+					else:
+						print('No contacts to show, add some friends!')
 				elif option == 4:
 					print('send private messsage')
 				elif option == 5:
