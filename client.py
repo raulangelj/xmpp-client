@@ -26,8 +26,6 @@ class Client(slixmpp.ClientXMPP):
 		# # plugins
 		self.register_plugin('xep_0030') # Service Discovery
 		self.register_plugin('xep_0199') # Ping
-		# self.register_plugin('xep_0054') # for vmCard (profile)
-		# self.register_plugin('xep_0082') # for vmCard (profile)
 
 		# events
 		self.add_event_handler('session_start', self.start)
@@ -87,54 +85,6 @@ class Client(slixmpp.ClientXMPP):
 					else:
 						print('No contacts to show, add some friends!')
 					time.sleep(WAIT)
-					# jid = input('Enter the JID of the user:\n>')
-					# recv = await self.plugin['xep_0054'].get_vcard(
-					# 	jid
-					# )
-					# # print('recv:', recv)
-					# # print('search ', recv['vcard_temp']['FN'])
-					# # print('search ', recv['from'])
-					# # https://slixmpp.readthedocs.io/en/latest/api/plugins/xep_0054.html?highlight=%3CvCard%20xmlns%3D%22vcard-temp%22%20%2F%3E
-					# # https://xmpp.org/extensions/xep-0054.html
-					# if recv:
-					# 	print('==================== Get Profil info ====================')
-					# 	print(f'JID >> {recv["from"]}')
-					# 	print('reciv', ["vcard_temp"])
-					# 	print(f'User name >> {recv["vcard_temp"]["FN"]}')
-					# else:
-					# 	print('User not found')
-					# # roster = self.client_roster.groups()
-					# # search_contact = {}
-					# # for group in roster:
-					# # 	for contact in roster[group]:
-					# # 		show = 'Avialable'
-					# # 		status = ''
-					# # 		conection = self.client_roster.presence(contact)
-					# # 		contactUserName = contact.split('@')[0]
-					# # 		if contact == jid:
-					# # 			if conection.items():
-					# # 				for answare, presence in conection.items():
-					# # 					if presence['show']:
-					# # 						show = presence['show']
-					# # 					if presence['status']:
-					# # 						status = presence['status']
-					# # 			else:
-					# # 				show = 'Offline'
-					# # 			search_contact = {
-					# # 				'name': contactUserName,
-					# # 				'state': show,
-					# # 				'status': status,
-					# # 				'user': contact
-					# # 			}
-					# # if search_contact:
-					# # 	print('==================== Get Profil info ====================')
-					# # 	print(f'JID >> {search_contact["user"]}')
-					# # 	print(f'User name >> {search_contact["name"]}')
-					# # 	print(f'State >> {search_contact["state"]}')
-					# # 	print(f'Status >> {search_contact["status"]}')
-					# # else:
-					# # 	print('User not found in the contacts')
-					# # time.sleep(WAIT)
 				elif option == 2:
 					"""
 					Add contact
@@ -216,10 +166,3 @@ class Client(slixmpp.ClientXMPP):
 			print('Error: Server is taking too long to respond')
 			self.disconnect()
 
-	# def get_vcard_callback(self, event):
-	# 	"""
-	# 	Callback for get_vcard.
-	# 	"""
-	# 	print('==================== Get Profil info ====================')
-	# 	print(f'JID >> {event["from"]}')
-	# 	print(f'User name >> {event["vcard_temp"]["FN"]}')
