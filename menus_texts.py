@@ -8,7 +8,7 @@ main_menu = '''\n
 
 login_menu = '''\n
 ==================== LOGIN MENU  ====================\n
-\t1. Show contacts\n
+\t1. Get information from specific user\n
 \t2. Add contact\n
 \t3. Show contact's info\n 
 \t4. Send private message\n
