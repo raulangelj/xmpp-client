@@ -5,7 +5,7 @@ import slixmpp
 import asyncio
 import xmpp
 import time
-from config import WAIT
+from config import WAIT, MESSAGE_TYPE
 from utils import get_login_menu_option, get_status
 from slixmpp.exceptions import IqError, IqTimeout
 
@@ -139,7 +139,20 @@ class Client(slixmpp.ClientXMPP):
 						print('No contacts to show, add some friends!')
 					time.sleep(WAIT)
 				elif option == 4:
-					print('send private messsage')
+					"""
+					Send message to specific user
+					"""
+					jid = input('Enter the JID of the user:\n>')
+					print(f'===================== Welcom to the chat with {jid.split("@")[0]} =====================')
+					print('To exit the chat, type "exit" and then press enter')
+					chatting = True
+					while chatting:
+						message = input('> ')
+						if message == 'exit':
+							chatting = False
+						else:
+							self.send_private_message(jid, message)
+							await asyncio.sleep(0.5) # wait 0.5 seconds to make sure the message was sent
 				elif option == 5:
 					print('send group message')
 				elif option == 6:
@@ -166,3 +179,15 @@ class Client(slixmpp.ClientXMPP):
 			print('Error: Server is taking too long to respond')
 			self.disconnect()
 
+	def send_private_message(self, to, message = ''):
+		"""
+		Send message to a user (private message)
+		"""
+		# print(f'Sending message to {to}')
+		# print(f'Message: {message}')
+		self.send_message(
+			mto=to,
+			mbody=message,
+			mtype=MESSAGE_TYPE
+		)
+		# print('Message sent succefully')
