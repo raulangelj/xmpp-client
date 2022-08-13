@@ -1,11 +1,10 @@
-import logging
-from time import time
-from traceback import print_tb
 import slixmpp
 import asyncio
 import xmpp
 import time
-from config import WAIT, MESSAGE_TYPE
+from config import WAIT
+from aioconsole import ainput
+from aioconsole.stream import aprint
 from utils import get_login_menu_option, get_status, get_chat_room_option
 from slixmpp.exceptions import IqError, IqTimeout
 
@@ -26,6 +25,7 @@ class Client(slixmpp.ClientXMPP):
 		# # plugins
 		self.register_plugin('xep_0030') # Service Discovery
 		self.register_plugin('xep_0199') # Ping
+		self.register_plugin('xep_0045') # MUC
 
 		# events
 		self.add_event_handler('session_start', self.start)
@@ -148,11 +148,11 @@ class Client(slixmpp.ClientXMPP):
 					print('To exit the chat, type "exit" and then press enter')
 					chatting = True
 					while chatting:
-						message = input('> ')
+						message = await ainput('> ')
 						if message == 'exit':
 							chatting = False
 						else:
-							self.send_private_message(jid, message)
+							self.send_message_p_g(jid, message)
 							await asyncio.sleep(0.5) # wait 0.5 seconds to make sure the message was sent
 				elif option == 5:
 					print('send group message')
@@ -169,7 +169,22 @@ class Client(slixmpp.ClientXMPP):
 						"""
 						Join an existing chat room
 						"""
-						pass
+						nickName = input('Enter your nick name:\n> ')
+						roomjid = input('Enter the JID of the room:\n> ')
+						self.join_chat_room(roomjid, nickName)
+						print(f'===================== Welcom to the chat with {roomjid.split("@")[0]} =====================')
+						print('To exit the chat, type "exit" and then press enter')
+						still_in_room = True
+						while still_in_room:
+							message = await ainput('> ')
+							if message == 'exit':
+								still_in_room = False
+								# leave the room
+								self.exit_room()
+							else:
+								self.send_message_p_g(roomjid, message, "groupchat")
+								await asyncio.sleep(0.5)
+
 					elif option_rooms == 3:
 						"""
 						Show chat rooms
@@ -209,7 +224,7 @@ class Client(slixmpp.ClientXMPP):
 			print('Error: Server is taking too long to respond')
 			self.disconnect()
 
-	def send_private_message(self, to, message = ''):
+	def send_message_p_g(self, to, message = '', typeM = "chat"):
 		"""
 		Send message to a user (private message)
 		"""
@@ -218,7 +233,7 @@ class Client(slixmpp.ClientXMPP):
 		self.send_message(
 			mto=to,
 			mbody=message,
-			mtype=MESSAGE_TYPE
+			mtype=typeM
 		)
 		# print('Message sent succefully')
 	
@@ -241,5 +256,35 @@ class Client(slixmpp.ClientXMPP):
 			print('Rooms available:')
 			for room in iq["disco_items"]:
 				print(f'{room["name"]}')
+				print(f'JID: {room["jid"]}')
 				print('=====================')
 			time.sleep(WAIT)
+	
+	def join_chat_room(self, room, nickName):
+		"""
+		To join a chat room
+		"""
+		# set room properties
+		self.room = room
+		self.nickName = nickName
+		print('room', self.room)
+
+		# join and create handlers for rooms
+		self['xep_0045'].join_muc(room, nickName, maxhistory=False)
+		self.add_event_handler(f"muc::{self.room}::got_online", self.on_join_chatroom)
+		self.add_event_handler(f"muc::{self.room}::got_offline", self.on_left_chatroom)
+
+	async def on_join_chatroom(self, presence):
+		"""
+		When a user joins the chat room
+		"""
+		await aprint(f'\t{str(presence["muc"]["nick"])} joined the chat room')
+
+	async def on_left_chatroom(self, presence):
+		await aprint(f'\t{str(presence["muc"]["nick"])} just left the chat room')
+
+	def exit_room(self):
+		self['xep_0045'].leave_muc(self.room, self.nickName)
+		# erase data for the room
+		self.room = None
+		self.nickName = None

@@ -22,6 +22,7 @@ async def chat(client: Client):
 if __name__ == "__main__":
 	optp = OptionParser()
 	optp.add_option('-d', '--debug', help='set loggin to DEBUG', action='store_const', dest='loglevel', const=logging.DEBUG, default=logging.INFO)
+	optp.add_option('-q', '--quiet', help='set loggin to ERROR', action='store_const', dest='loglevel', const=logging.ERROR, default=logging.INFO)
 
 	opts, args = optp.parse_args()
 
