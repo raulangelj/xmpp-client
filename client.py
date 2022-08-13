@@ -7,6 +7,7 @@ from aioconsole import ainput
 from aioconsole.stream import aprint
 from utils import get_login_menu_option, get_status, get_chat_room_option
 from slixmpp.exceptions import IqError, IqTimeout
+from slixmpp.xmlstream.stanzabase import ET
 
 class Client(slixmpp.ClientXMPP):
 	"""
@@ -30,6 +31,7 @@ class Client(slixmpp.ClientXMPP):
 		# events
 		self.add_event_handler('session_start', self.start)
 		self.add_event_handler('disco_items', self.print_rooms)
+		self.add_event_handler("groupchat_message", self.chatroom_message)
 
 
 	async def start(self, event):
@@ -164,7 +166,22 @@ class Client(slixmpp.ClientXMPP):
 						"""
 						Create a new chat room
 						"""
-						pass
+						nickName = input('Enter your nick name:\n> ')
+						roomName = input('Enter the name of the new room:\n> ')
+						roomName = f'{roomName}@conference.alumchat.fun'
+						self.create_chat_room(roomName, nickName)
+						print(f'===================== Welcom to the chat with {roomName.split("@")[0]} =====================')
+						print('To exit the chat, type "exit" and then press enter')
+						still_in_room = True
+						while still_in_room:
+							message = await ainput('> ')
+							if message == 'exit':
+								still_in_room = False
+								# leave the room
+								self.exit_room()
+							else:
+								self.send_message_p_g(roomName, message, "groupchat")
+								await asyncio.sleep(0.5)
 					elif option_rooms == 2:
 						"""
 						Join an existing chat room
@@ -193,7 +210,6 @@ class Client(slixmpp.ClientXMPP):
 							await self.get_rooms()
 						except (IqError, IqTimeout):
 							print("Error on discovering rooms")
-						pass
 					elif option_rooms == 4:
 						"""
 						Exit from chat room
@@ -236,7 +252,7 @@ class Client(slixmpp.ClientXMPP):
 			mtype=typeM
 		)
 		# print('Message sent succefully')
-	
+
 	async def get_rooms(self):
 		"""
 		Get all chat rooms
@@ -247,7 +263,7 @@ class Client(slixmpp.ClientXMPP):
 		except (IqError, IqTimeout):
 			print("There was an error, please try again later")
 		# print('Chat rooms retrieved')
-	
+
 	def print_rooms(self, iq):
 		"""
 		Print the chat rooms received
@@ -259,7 +275,7 @@ class Client(slixmpp.ClientXMPP):
 				print(f'JID: {room["jid"]}')
 				print('=====================')
 			time.sleep(WAIT)
-	
+
 	def join_chat_room(self, room, nickName):
 		"""
 		To join a chat room
@@ -288,3 +304,41 @@ class Client(slixmpp.ClientXMPP):
 		# erase data for the room
 		self.room = None
 		self.nickName = None
+
+	def create_chat_room(self, roomName, nickName):
+		"""
+		Create new chat room
+		"""
+		self.room = roomName
+		self.nickName = nickName
+
+		# Create
+		self['xep_0045'].join_muc(self.room, self.nickName)
+
+		# Event handlers
+		self.add_event_handler(f"muc::{self.room}::got_online", self.on_join_chatroom)
+		self.add_event_handler(f"muc::{self.room}::got_offline", self.on_left_chatroom)
+
+		try:
+			# send the onwner of the room
+			query = ET.Element('{http://jabber.org/protocol/muc#owner}query')
+			elementType = ET.Element('{jabber:x:data}x', type='submit')
+			query.append(elementType)
+
+			iq = self.make_iq_set(query)
+			iq['to'] = self.room
+			iq['from'] = self.boundjid
+			iq.send()
+		except Exception:
+			print("Room could not be created, try again later")
+
+	async def chatroom_message(self, message=''):
+		"""
+		Recivea message from a chat room
+		"""
+		user = message['mucnick']
+		is_actual_room = self.room in str(message['from'])
+		display_message = f'{user}: {message["body"]}'
+
+		if is_actual_room and user != self.nickName:
+			await aprint(display_message)
