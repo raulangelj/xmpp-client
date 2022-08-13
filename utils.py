@@ -49,6 +49,25 @@ def get_jid_and_password():
 	password = getpass('Password: ')
 	return jid, password
 
+def get_chat_room_option():
+	"""
+	Get the option from the chat room menu
+	"""
+	valid_option = False
+	while not valid_option:
+		print(rooms_menu)
+		try:
+			option = int(input('What do you want to do?\n> '))
+			if option < 1 or option > 4:
+				print('Choose a valid option')
+				time.sleep(WAIT)
+			else:
+				valid_option = True
+		except Exception:
+			print('Choose a valid option')
+			time.sleep(WAIT)
+	return option
+
 def get_status():
 	"""
 	Get the status of the user

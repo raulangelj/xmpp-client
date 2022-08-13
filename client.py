@@ -6,7 +6,7 @@ import asyncio
 import xmpp
 import time
 from config import WAIT, MESSAGE_TYPE
-from utils import get_login_menu_option, get_status
+from utils import get_login_menu_option, get_status, get_chat_room_option
 from slixmpp.exceptions import IqError, IqTimeout
 
 class Client(slixmpp.ClientXMPP):
@@ -29,6 +29,7 @@ class Client(slixmpp.ClientXMPP):
 
 		# events
 		self.add_event_handler('session_start', self.start)
+		self.add_event_handler('disco_items', self.print_rooms)
 
 
 	async def start(self, event):
@@ -155,6 +156,35 @@ class Client(slixmpp.ClientXMPP):
 							await asyncio.sleep(0.5) # wait 0.5 seconds to make sure the message was sent
 				elif option == 5:
 					print('send group message')
+					"""
+					CHAT WITH GROUP
+					"""
+					option_rooms = get_chat_room_option()
+					if option_rooms == 1:
+						"""
+						Create a new chat room
+						"""
+						pass
+					elif option_rooms == 2:
+						"""
+						Join an existing chat room
+						"""
+						pass
+					elif option_rooms == 3:
+						"""
+						Show chat rooms
+						"""
+						try:
+							await self.get_rooms()
+						except (IqError, IqTimeout):
+							print("Error on discovering rooms")
+						pass
+					elif option_rooms == 4:
+						"""
+						Exit from chat room
+						"""
+						pass
+
 				elif option == 6:
 					"""
 					Change status
@@ -191,3 +221,25 @@ class Client(slixmpp.ClientXMPP):
 			mtype=MESSAGE_TYPE
 		)
 		# print('Message sent succefully')
+	
+	async def get_rooms(self):
+		"""
+		Get all chat rooms
+		"""
+		print('Getting chat rooms...')
+		try:
+			await self['xep_0030'].get_items(jid = "conference.alumchat.fun", iterator=True)
+		except (IqError, IqTimeout):
+			print("There was an error, please try again later")
+		# print('Chat rooms retrieved')
+	
+	def print_rooms(self, iq):
+		"""
+		Print the chat rooms received
+		"""
+		if iq['type'] == 'result':
+			print('Rooms available:')
+			for room in iq["disco_items"]:
+				print(f'{room["name"]}')
+				print('=====================')
+			time.sleep(WAIT)

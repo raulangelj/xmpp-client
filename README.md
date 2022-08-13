@@ -29,6 +29,7 @@ This client provides basic chat features throughout the CLI interface.
 - [X] Add a new contact.
 - [X] Message 1 to 1.
 - [] Chat rooms.
+  - [X] View available rooms
 - [X] Create presence Message.
 - [] Send/Receive notifications.
 - [] Send/Receive Files.
