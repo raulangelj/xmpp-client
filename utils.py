@@ -1,6 +1,8 @@
 import time
 from menus_texts import *
 from config import *
+from aioconsole import ainput
+from aioconsole.stream import aprint
 from getpass import getpass
 
 def get_principal_menu_option():
@@ -22,22 +24,22 @@ def get_principal_menu_option():
 			time.sleep(WAIT)
 	return option
 
-def get_login_menu_option():
+async def get_login_menu_option():
 	"""
 	Get the option from the login menu
 	"""
 	valid_option = False
 	while not valid_option:
-		print(login_menu)
+		await aprint(login_menu)
 		try:
-			option = int(input('What do you want to do?\n> '))
+			option = int(await ainput('What do you want to do?\n> '))
 			if option < 1 or option > 7:
-				print('Choose a valid option')
+				await aprint('Choose a valid option')
 				time.sleep(WAIT)
 			else:
 				valid_option = True
 		except Exception:
-			print('Choose a valid option')
+			await aprint('Choose a valid option')
 			time.sleep(WAIT)
 	return option
 

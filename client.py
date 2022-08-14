@@ -22,16 +22,22 @@ class Client(slixmpp.ClientXMPP):
 		self.name = jid.split('@')[0]
 		self.status = status
 		self.status_message = status_message
+		self.actual_chat = ''
 
 		# # plugins
 		self.register_plugin('xep_0030') # Service Discovery
 		self.register_plugin('xep_0199') # Ping
 		self.register_plugin('xep_0045') # MUC
+		self.register_plugin('xep_0085') # Notifications
+		self.register_plugin('xep_0004') # Data Forms
+		self.register_plugin('xep_0060') # PubSub
+
 
 		# events
 		self.add_event_handler('session_start', self.start)
+		self.add_event_handler('message', self.chat_recived)
+		self.add_event_handler('groupchat_message', self.chatroom_message)
 		self.add_event_handler('disco_items', self.print_rooms)
-		self.add_event_handler("groupchat_message", self.chatroom_message)
 
 
 	async def start(self, event):
@@ -47,7 +53,7 @@ class Client(slixmpp.ClientXMPP):
 			# chat(self)
 			connected = True
 			while connected:
-				option = get_login_menu_option()
+				option = await get_login_menu_option()
 				if option == 1:
 					"""
 					Get information from specific user
@@ -145,14 +151,16 @@ class Client(slixmpp.ClientXMPP):
 					"""
 					Send message to specific user
 					"""
-					jid = input('Enter the JID of the user:\n>')
-					print(f'===================== Welcom to the chat with {jid.split("@")[0]} =====================')
-					print('To exit the chat, type "exit" and then press enter')
+					jid = await ainput('Enter the JID of the user:\n>')
+					self.actual_chat = jid
+					await aprint(f'===================== Welcom to the chat with {jid.split("@")[0]} =====================')
+					await aprint('To exit the chat, type "exit" and then press enter')
 					chatting = True
 					while chatting:
 						message = await ainput('> ')
 						if message == 'exit':
 							chatting = False
+							self.actual_chat = ''
 						else:
 							self.send_message_p_g(jid, message)
 							await asyncio.sleep(0.5) # wait 0.5 seconds to make sure the message was sent
@@ -201,7 +209,6 @@ class Client(slixmpp.ClientXMPP):
 							else:
 								self.send_message_p_g(roomjid, message, "groupchat")
 								await asyncio.sleep(0.5)
-
 					elif option_rooms == 3:
 						"""
 						Show chat rooms
@@ -215,7 +222,6 @@ class Client(slixmpp.ClientXMPP):
 						Exit from chat room
 						"""
 						pass
-
 				elif option == 6:
 					"""
 					Change status
@@ -259,7 +265,7 @@ class Client(slixmpp.ClientXMPP):
 		"""
 		print('Getting chat rooms...')
 		try:
-			await self['xep_0030'].get_items(jid = "conference.alumchat.fun", iterator=True)
+			await self['xep_0030'].get_items(jid = "conference.alumchat.fun")
 		except (IqError, IqTimeout):
 			print("There was an error, please try again later")
 		# print('Chat rooms retrieved')
@@ -342,3 +348,12 @@ class Client(slixmpp.ClientXMPP):
 
 		if is_actual_room and user != self.nickName:
 			await aprint(display_message)
+
+	async def chat_recived(self, message):
+		# await aprint('New message', message)
+		if message['type'] == 'chat':
+			user = str(message['from']).split('@')[0]
+			if user == self.actual_chat.split('@')[0]:
+				print(f'{user}: {message["body"]}')
+			else:
+				print(f'You have a new message from {user}')

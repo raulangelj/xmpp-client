@@ -33,5 +33,5 @@ This client provides basic chat features throughout the CLI interface.
   - [X] Join an exiting chatroom.
   - [X] Create a new chatroom.
 - [X] Create presence Message.
-- [] Send/Receive notifications.
+- [X] Send/Receive notifications.
 - [] Send/Receive Files.
