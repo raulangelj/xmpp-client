@@ -77,10 +77,18 @@ def get_status():
 	print('Set as available? (y/n)? ')
 	stat_opt = input('> ')
 	if stat_opt.lower() in ['y', "yes"]:
-		status = 'Available'
+		status = 'chat'
 	else:
-		print('Write your current status')
-		status = input('> ')
+		print(status_menu)
+		status = input('What status do you want to set?\n> ')
+		if status == '1':
+			status = 'chat'
+		elif status == '2':
+			status = 'away'
+		elif status == '3':
+			status = 'xa'
+		else:
+			status = 'dnd'
 	print('Write down your status message: ')
 	status_message = input('> ')
 	return status, status_message

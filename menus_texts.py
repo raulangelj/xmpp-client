@@ -25,4 +25,12 @@ rooms_menu = '''\n
 \t4. Return to menu\n
 '''
 
+status_menu = '''
+==================== STATUS MENU  ====================\n
+1. Available\n
+2. Away\n
+3. Not Available\n
+4. Busy\n
+'''
+
 # la numero 3 no la entiendo
