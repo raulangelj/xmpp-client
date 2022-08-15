@@ -4,7 +4,14 @@ Simple XMPP Client ussing Python, Slixmpp and xmpppy
 
 ## 🛠 Installation requirements
 
-TODO
+(optional)
+
+1. Create the virtual enviroment ```python -m venv venv```
+2. Activate the virtual enviroment ```. venv/Scripts/activate```
+
+(install dependencies)
+
+3. pip install -r requirements.txt
 
 ## Running the proyect 🚀
 
@@ -14,7 +21,9 @@ TODO
 
 ### Useful flags for debugin
 
-- -d: for slixmpp debuggin mode
+- ```-d```: for slixmpp debuggin mode
+- ```-q```: for slixmpp only critial error mode
+
 
 ## 📋 Features
 

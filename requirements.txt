@@ -1,0 +1,10 @@
+aioconsole==0.5.0
+aiodns==3.0.0
+cffi==1.15.1
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pycares==4.2.2
+pycparser==2.21
+six==1.16.0
+slixmpp==1.8.1
+xmpppy==0.7.1
