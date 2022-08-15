@@ -42,6 +42,9 @@ class Delete_account(slixmpp.ClientXMPP):
 		self.disconnect()
 
 	async def unregister(self):
+		"""
+		Function to unregister the client from the server.
+		"""
 		response = self.Iq()
 		response['type'] = 'set'
 		response['from'] = self.boundjid.user
@@ -49,6 +52,7 @@ class Delete_account(slixmpp.ClientXMPP):
 		response.append(fragment)
 
 		try:
+			# send the request to the server
 			await response.send()
 			print(f"Account deleted successfully: {self.boundjid.jid}!")
 		except IqError as e:

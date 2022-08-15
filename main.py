@@ -1,8 +1,5 @@
 import logging
-from pydoc import cli
-import aiodns
 import asyncio
-from asyncio import run
 from account import *
 from utils import *
 from client import Client
@@ -43,22 +40,14 @@ if __name__ == "__main__":
 				print("Error signing in, please try again")
 			else:
 				print("Signed in successfully")
-			# TODO - ask if user want to log in and add login logic
 			option = get_principal_menu_option()
 		# OPTION 2: Login
 		if option == 2:
 			jid, password = get_jid_and_password()
 			status, status_message = get_status()
 			client = Client(jid, password, status, status_message)
-			# client.connect(force_starttls=False)
-			# client.process(forever=False)
 			client.connect(disable_starttls=False)
-			# run(chat(client))
 			client.process(forever=False)
-			# client.connect(disable_starttls=False)
-			# client.loop.run_until_complete(client.connected_event.wait())
-			# client.loop.create_task(chat(client))
-			# client.process(forever=False)
 		# OPTION 3: Remove account
 		if option == 3:
 			jid, password = get_jid_and_password()

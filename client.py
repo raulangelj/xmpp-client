@@ -1,6 +1,5 @@
 import slixmpp
 import asyncio
-import xmpp
 import time
 from config import WAIT
 from aioconsole import ainput
@@ -49,7 +48,6 @@ class Client(slixmpp.ClientXMPP):
 			await self.get_roster() # get the roster
 			print('Welcome to the chat')
 			# TODO - add the menu logic for user interaction here
-			# TODO - move this into a function in utils
 			# chat(self)
 			connected = True
 			while connected:
@@ -250,14 +248,11 @@ class Client(slixmpp.ClientXMPP):
 		"""
 		Send message to a user (private message)
 		"""
-		# print(f'Sending message to {to}')
-		# print(f'Message: {message}')
 		self.send_message(
 			mto=to,
 			mbody=message,
 			mtype=typeM
 		)
-		# print('Message sent succefully')
 
 	async def get_rooms(self):
 		"""
@@ -268,7 +263,6 @@ class Client(slixmpp.ClientXMPP):
 			await self['xep_0030'].get_items(jid = "conference.alumchat.fun")
 		except (IqError, IqTimeout):
 			print("There was an error, please try again later")
-		# print('Chat rooms retrieved')
 
 	def print_rooms(self, iq):
 		"""
@@ -350,7 +344,6 @@ class Client(slixmpp.ClientXMPP):
 			await aprint(display_message)
 
 	async def chat_recived(self, message):
-		# await aprint('New message', message)
 		if message['type'] == 'chat':
 			user = str(message['from']).split('@')[0]
 			if user == self.actual_chat.split('@')[0]:
