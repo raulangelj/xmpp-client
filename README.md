@@ -43,4 +43,4 @@ This client provides basic chat features throughout the CLI interface.
   - [X] Create a new chatroom.
 - [X] Create presence Message.
 - [X] Send/Receive notifications.
-- [] Send/Receive Files.
+- [ ] Send/Receive Files.
